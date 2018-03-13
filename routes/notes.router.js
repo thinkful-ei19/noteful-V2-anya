@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-
+const knex = require('../knex');
 // Create an router instance (aka "mini-app")
 const router = express.Router();
 
@@ -16,14 +16,19 @@ const notes = simDB.initialize(data);
 /* ========== GET/READ ALL NOTES ========== */
 router.get('/notes', (req, res, next) => {
   const { searchTerm } = req.query;
-  /* 
-  notes.filter(searchTerm)
-    .then(list => {
-      res.json(list);
+  
+  knex.select('notes.id', 'title', 'content')
+    .from('notes')
+    .where(function () {
+      if (searchTerm) {
+        this.where('title', 'like', `%${searchTerm}%`);
+      }
     })
-    .catch(err => next(err)); 
-  */
+    .then(list => res.json(list))
+    .catch(err => next(err));
+    
 });
+
 
 /* ========== GET/READ SINGLE NOTES ========== */
 router.get('/notes/:id', (req, res, next) => {
@@ -40,7 +45,14 @@ router.get('/notes/:id', (req, res, next) => {
     })
     .catch(err => next(err));
   */
+
+  knex.select('id', 'title', 'content')
+    .from('notes')
+    .where('id', noteId)
+    .then(item => res.json(item))
+    .catch(err => next(err));
 });
+
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/notes/:id', (req, res, next) => {
@@ -73,7 +85,17 @@ router.put('/notes/:id', (req, res, next) => {
     })
     .catch(err => next(err));
   */
+  
+  knex('notes')
+    .where({id: noteId})
+    .update({
+      title: req.body.title,
+      content: req.body.content
+    }, ['id', 'title', 'content'])
+    .then(item => res.json(item))
+    .catch(err => next(err));
 });
+
 
 /* ========== POST/CREATE ITEM ========== */
 router.post('/notes', (req, res, next) => {
@@ -96,11 +118,23 @@ router.post('/notes', (req, res, next) => {
     })
     .catch(err => next(err));
   */
+
+  knex
+    .insert(newItem)
+    .into('notes')
+    .returning(['id', 'title', 'content'])
+    .then(item => {
+      if (item) {
+        res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
+      } 
+    })
+    .catch(err => next(err));
 });
+
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/notes/:id', (req, res, next) => {
-  const id = req.params.id;
+  const noteId = req.params.id;
   
   /*
   notes.delete(id)
@@ -113,6 +147,13 @@ router.delete('/notes/:id', (req, res, next) => {
     })
     .catch(err => next(err));
   */
+
+  knex('notes')
+    .where('id', noteId)
+    .del()
+    .catch(err => next(err));
 });
+
+
 
 module.exports = router;
