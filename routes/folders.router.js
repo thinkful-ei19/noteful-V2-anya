@@ -29,6 +29,7 @@ router.get('/folders/:id', (req, res, next) => {
 //UPDATE folders - doens't have an endpoint
 router.put('/folders/:id', (req, res, next) => {
   const name = req.body.name;
+  //console.log('looking at this!', req.body);
   const folderId = req.params.id;
   /***** Never trust users. Validate input *****/
   if (!name) {
@@ -38,8 +39,8 @@ router.put('/folders/:id', (req, res, next) => {
   }
   
   knex('folders')
-    .update({name : name})
-    .where({id: folderId})
+    .update({'name': name})
+    .where({'id': folderId})
     .returning(['id', 'name'])
     .then(([item]) => {
       if (item) {
@@ -54,7 +55,7 @@ router.put('/folders/:id', (req, res, next) => {
 //CREATE folder
 router.post('/folders', (req, res, next) => {
 
-  const newItem = req.body.name;
+  const name = req.body.name;
   /***** Never trust users - validate input *****/
   if (!name) {
     const err = new Error('Missing `name` in request body');
@@ -63,22 +64,21 @@ router.post('/folders', (req, res, next) => {
   }
 
   knex
-    .insert(newItem)
+    .insert({'name': name})
     .into('folders')
     .returning(['id', 'name'])
-    .then(item => {
-      if (item) {
-        res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
-      } 
+    .then((results) => {
+      const result = results[0];
+      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
     })
     .catch(err => next(err));
 });
 
 //DELETE folder
-router.delete('/notes/:id', (req, res, next) => {
+router.delete('/folders/:id', (req, res, next) => {
   const folderId = req.params.id;
     
-  knex('notes')
+  knex('folders')
     .where('id', folderId)
     .del()
     .catch(err => next(err));

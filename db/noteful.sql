@@ -1,7 +1,8 @@
 -- psql -U dev -f ./db/noteful.sql -d noteful-app
 
-DROP TABLE IF EXISTS folders;
 DROP TABLE IF EXISTS notes;
+DROP TABLE IF EXISTS folders;
+
 
 CREATE TABLE folders (
     id serial PRIMARY KEY,

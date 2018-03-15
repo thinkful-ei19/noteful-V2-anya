@@ -23,10 +23,10 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Mount router on "/v2"
-app.use('/v2', notesRouterV2);
+app.use('/api', notesRouterV2);
 
 // Mount router on "/v3"
-app.use('/v3', foldersRouterV3);
+app.use('/api', foldersRouterV3);
 
 // Catch-all 404
 app.use(function (req, res, next) {
