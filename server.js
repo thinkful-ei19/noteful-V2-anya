@@ -7,6 +7,7 @@ const { PORT } = require('./config');
 
 const notesRouterV2 = require('./routes/notes.router');
 const foldersRouterV3 = require('./routes/folders.router');
+const tagsRouterV3 = require('./routes/tags.router');
 
 // Create an Express application
 const app = express();
@@ -22,11 +23,10 @@ app.use(express.static('public'));
 // Parse request body
 app.use(express.json());
 
-// Mount router on "/v2"
+// Mount routers
 app.use('/api', notesRouterV2);
-
-// Mount router on "/v3"
 app.use('/api', foldersRouterV3);
+app.use('/api', tagsRouterV3);
 
 // Catch-all 404
 app.use(function (req, res, next) {

@@ -53,7 +53,40 @@ knex.select(1).then(res => console.log(res));
 //   .returning(['id', 'name'])
 //   .then(item => console.log(item));
 
-knex('folders')
-  .where({id : '106'})
-  .del()
-  .then(item => console.log(item));
+// knex('folders')
+//   .where({id : '106'})
+//   .del()
+//   .then(item => console.log(item));
+
+// knex.select('id', 'name')
+//   .from('tags')
+//   .where({'id': 3})
+//   .then( result => {
+//     if (result) {
+//       console.log(result);
+//     } else {
+//       console.log('next');
+//     }
+//   });
+
+// knex.insert({'name': 'new Insert'})
+//   .into('tags')
+//   .returning (['id', 'name'])
+//   .then(([result]) => {
+//     if (result) {
+//       console.log(result);
+//     } else {
+//       console.log('next');
+//     }
+//   });
+
+// knex.del()
+//   .where('id', 5)
+//   .from('tags')
+//   .then( result => {
+//     if (result) {
+//       console.log(result);
+//     } else {
+//       console.log('next');
+//     }
+//   });
