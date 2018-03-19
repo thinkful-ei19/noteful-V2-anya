@@ -195,7 +195,7 @@ describe('Noteful API', function () {
 
   describe('GET /api/notes/:id', function () {
     
-    it.only('should return correct notes', function () {
+    it('should return correct notes', function () {
 
       const dataPromise = knex.select()
         .from('notes')
@@ -225,10 +225,9 @@ describe('Noteful API', function () {
         'tags': []
       };
       let body;
-      return chai.request(app)
-        .post('/api/notes')
-        .send(newItem)
-        .then(function (res) {
+      const apiPromise = chai.request(app).post('/api/notes').send(newItem);
+      return Promise.all([newItem, apiPromise])
+        .then(function ([data, res]) {
           body = res.body;
           expect(res).to.have.status(201);
           expect(res).to.have.header('location');
@@ -247,11 +246,10 @@ describe('Noteful API', function () {
       const newItem = {
         'foo': 'bar'
       };
-      return chai.request(app)
-        .post('/api/notes')
-        .send(newItem)
-        .catch(err => err.response)
-        .then(res => {
+      const apiPromise = chai.request(app).post('/api/notes').send(newItem).catch(err => err.response);
+
+      return Promise.all([newItem, apiPromise])
+        .then(function ([data, res]) {
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
@@ -269,10 +267,10 @@ describe('Noteful API', function () {
         'content': 'woof woof',
         'tags': []
       };
-      return chai.request(app)
-        .put('/api/notes/1005')
-        .send(updateItem)
-        .then(function (res) {
+      const apiPromise =  chai.request(app).put('/api/notes/1005').send(updateItem);
+
+      return Promise.all([updateItem, apiPromise])
+        .then(function ([data, res]) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
@@ -288,11 +286,10 @@ describe('Noteful API', function () {
       const updateItem = {
         'foo': 'bar'
       };
-      return chai.request(app)
-        .put('/api/notes/9999')
-        .send(updateItem)
-        .catch(err => err.response)
-        .then(res => {
+      const apiPromise = chai.request(app).put('/api/notes/9999').send(updateItem).catch(err => err.response);
+
+      return Promise.all([updateItem, apiPromise])
+        .then(function ([data, res]) {
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
@@ -305,9 +302,12 @@ describe('Noteful API', function () {
   describe('DELETE  /api/notes/:id', function () {
 
     it('should delete an item by id', function () {
-      return chai.request(app)
-        .delete('/api/notes/1005')
-        .then(function (res) {
+
+      const deleted = null;
+      const apiPromise = chai.request(app).delete('/api/notes/1005');
+
+      return Promise.all([deleted, apiPromise])
+        .then(function ([data, res]) {
           expect(res).to.have.status(204);
         });
     });
